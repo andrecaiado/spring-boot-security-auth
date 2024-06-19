@@ -6,7 +6,8 @@ This is a Spring Boot application that implements Spring Security for authentica
 - Exposes endpoints to register and authenticate users
 - Exposes an endpoint to retrieve the current user information
 - Uses Spring Security for authentication and authorization
-- Uses JWT for authentication
+- Generates a JWT token for authenticated users
+- Uses JWT token for authorization
 - Stores the user details in a PostgreSQL database
 
 ### Additional features
