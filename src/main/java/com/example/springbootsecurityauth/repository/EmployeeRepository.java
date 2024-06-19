@@ -1,6 +1,6 @@
-package com.example.springboottemplate.repository;
+package com.example.springbootsecurityauth.repository;
 
-import com.example.springboottemplate.entity.Employee;
+import com.example.springbootsecurityauth.entity.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

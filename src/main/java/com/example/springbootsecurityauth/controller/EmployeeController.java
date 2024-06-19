@@ -1,7 +1,7 @@
-package com.example.springboottemplate.controller;
+package com.example.springbootsecurityauth.controller;
 
-import com.example.springboottemplate.entity.Employee;
-import com.example.springboottemplate.service.EmployeeService;
+import com.example.springbootsecurityauth.entity.Employee;
+import com.example.springbootsecurityauth.service.EmployeeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

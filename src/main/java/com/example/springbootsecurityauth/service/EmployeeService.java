@@ -1,9 +1,9 @@
-package com.example.springboottemplate.service;
+package com.example.springbootsecurityauth.service;
 
-import com.example.springboottemplate.entity.Employee;
+import com.example.springbootsecurityauth.entity.Employee;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import com.example.springboottemplate.repository.EmployeeRepository;
+import com.example.springbootsecurityauth.repository.EmployeeRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;

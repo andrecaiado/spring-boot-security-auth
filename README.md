@@ -18,3 +18,14 @@ This is a Spring Boot application that implements Spring Security for authentica
 - Includes a datasource configuration for testing purposes that uses the H2 in-memory database
 
 In this readme file, we will focus on the main features' implementation. For more details about the additional features, please refer to the [Spring Boot Template project](https://github.com/andrecaiado/spring-boot-template).
+
+## Dependencies
+
+To use Spring Security, we added the Spring Boot Starter Security dependency to the `pom.xml` file.
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+```
