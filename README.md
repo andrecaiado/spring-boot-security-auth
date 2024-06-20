@@ -29,3 +29,40 @@ To use Spring Security, we added the Spring Boot Starter Security dependency to 
     <artifactId>spring-boot-starter-security</artifactId>
 </dependency>
 ```
+
+## Authentication mechanism
+
+We are using a Username and Password authentication mechanism. 
+
+The user sends a POST request to an authentication specific endpoint with the username and password in the request body. The application authenticates the user and returns a JWT token.
+
+### DaoAuthenticationProvider
+
+The `DaoAuthenticationProvider` is an `AuthenticationProvider` implementation that uses a `UserDetailsService` and `PasswordEncoder` to authenticate a username and password.
+
+TODO: Create a custom diagram to explain the `DaoAuthenticationProvider` usage.
+
+![daoauthenticationprovider.png](src%2Fmain%2Fresources%2Fdaoauthenticationprovider.png)
+*[DaoAuthenticationProvider Usage](https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/dao-authentication-provider.html)*
+
+## User entity and SecurityUser class
+
+The `User` entity is used to store the user details in the database using Spring Data JPA.
+
+The `SecurityUser` class is used to retrieve the user details from the database and provide them to the `AuthenticationManager`.
+
+### Why do we need the `SecurityUser` class
+
+Because we are using `DaoAuthenticationProvider` to authenticate the users, we need to implement the `UserDetails` interface to retrieve the user details from the database. 
+Thus, we created the `SecurityUser` class that implements the `UserDetails` interface from Spring Security, which provides the user details to the `AuthenticationManager`.
+
+We could have used the `User` entity to implements the `UserDetails` interface, but it is not recommended to expose the entity directly to the `AuthenticationManager`. The `SecurityUser` class provides a layer of abstraction between the entity and the `AuthenticationManager`.
+
+### JpaUserDetailsService
+
+The `JpaUserDetailsService` class implements the `UserDetailsService` interface from Spring Security. It is used to retrieve the user details from the database.
+
+
+
+## Configuration
+
