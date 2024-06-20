@@ -1,6 +1,6 @@
 spring:
   application:
-    name: spring-boot-template
+    name: spring-boot-security-auth
     jackson:
       property-naming-strategy: SNAKE_CASE
     flyway:
@@ -8,3 +8,5 @@ spring:
       schemas: employee
       baselineOnMigrate: true
       enabled: true
+  jpa:
+    show-sql: true

@@ -12,20 +12,24 @@ import java.time.Instant;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @NotNull()
-    @Column(unique = true)
+    @Column(unique = true, name = "username")
     private String username;
 
     @NotNull()
+    @Column(name = "password")
     private String password;
 
+    @Column(name = "last_login")
     private Instant lastLogin;
 
+    @Column(name = "roles")
     private String roles;
 }

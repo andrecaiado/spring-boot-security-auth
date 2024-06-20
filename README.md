@@ -32,13 +32,17 @@ To use Spring Security, we added the Spring Boot Starter Security dependency to 
 
 ## Authentication mechanism
 
-We are using a Username and Password authentication mechanism. 
+In this project, we are using a Username and Password authentication mechanism. 
 
-The user sends a POST request to an authentication specific endpoint with the username and password in the request body. The application authenticates the user and returns a JWT token.
+The basic use case for this mechanism consists in a user sending a POST request to an authentication specific endpoint with the username and password in the request body. The application authenticates the user and returns a JWT token.
+
+## Provider manager
+
+
 
 ### DaoAuthenticationProvider
 
-The `DaoAuthenticationProvider` is an `AuthenticationProvider` implementation that uses a `UserDetailsService` and `PasswordEncoder` to authenticate a username and password.
+The `DaoAuthenticationProvider` is an `AuthenticationProvider` implementation that supports Username and Password authentication mechanism. It uses the `UserDetailsService` and `PasswordEncoder` to authenticate a username and password.
 
 TODO: Create a custom diagram to explain the `DaoAuthenticationProvider` usage.
 
@@ -58,11 +62,9 @@ Thus, we created the `SecurityUser` class that implements the `UserDetails` inte
 
 We could have used the `User` entity to implements the `UserDetails` interface, but it is not recommended to expose the entity directly to the `AuthenticationManager`. The `SecurityUser` class provides a layer of abstraction between the entity and the `AuthenticationManager`.
 
-### JpaUserDetailsService
+## JpaUserDetailsService
 
-The `JpaUserDetailsService` class implements the `UserDetailsService` interface from Spring Security. It is used to retrieve the user details from the database.
-
-
+The `JpaUserDetailsService` class implements the `UserDetailsService` interface from Spring Security. It is used to retrieve the user details from the database. If the user is not found, it throws a `UsernameNotFoundException`.
 
 ## Configuration
 
