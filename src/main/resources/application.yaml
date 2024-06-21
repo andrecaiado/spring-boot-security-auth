@@ -9,4 +9,10 @@ spring:
       baselineOnMigrate: true
       enabled: true
   jpa:
-    show-sql: true
+    show-sql: false
+jwt:
+  signing:
+    key: 73f519d1e12a2427dc22f2982ada0bd6e2501fd519e87538d4562b9c934692d7422344140c467082ec3eb97ed86f6ef3d3869745fb918d26ad9018809099cd77
+  expiration:
+    in:
+      ms: 3600000 # 1 * 60 * 60 * 1000 -> 1 hour

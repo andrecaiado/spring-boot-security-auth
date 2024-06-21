@@ -61,6 +61,7 @@ In this project, we are using the following filters:
 VALIDATE THIS:
 - `CsrfFilter`: Prevents CSRF attacks
 - `Authorize Requests`: Authorizes the requests based on the request matchers
+- `Session Management`: Set the session management to be stateless because we don't want to store the session in the server
 - `UsernamePasswordAuthenticationFilter`: Processes the username and password from the request body ??
 - `JwtAuthenticationFilter`: Processes the JWT token from the request header
 

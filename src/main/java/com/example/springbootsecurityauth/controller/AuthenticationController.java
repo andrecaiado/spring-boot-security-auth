@@ -1,7 +1,10 @@
 package com.example.springbootsecurityauth.controller;
 
 import com.example.springbootsecurityauth.dto.SignInRequest;
+import com.example.springbootsecurityauth.dto.SignInResponse;
 import com.example.springbootsecurityauth.service.AuthenticationService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +19,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<Void> login(@RequestBody SignInRequest signInRequest) {
-        authenticationService.signIn(signInRequest.getUsername(), signInRequest.getPassword());
-        return ResponseEntity.ok().build();
+    public ResponseEntity<SignInResponse> signIn(@Valid @RequestBody SignInRequest signInRequest) {
+        SignInResponse response = authenticationService.signIn(signInRequest.getUsername(), signInRequest.getPassword());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/user")
