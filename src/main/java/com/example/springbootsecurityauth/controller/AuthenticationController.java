@@ -6,7 +6,10 @@ import com.example.springbootsecurityauth.service.AuthenticationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/auth")
@@ -24,8 +27,9 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/user")
-    public String user() {
-        return "Hello User!";
+    public String user(Principal principal) {
+        return "Hello, " + principal.getName() + "!";
     }
 }

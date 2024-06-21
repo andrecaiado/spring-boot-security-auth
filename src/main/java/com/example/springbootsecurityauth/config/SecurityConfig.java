@@ -14,14 +14,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private final JpaUserDetailsService jpaUserDetailsService;
 
-    public SecurityConfig(JpaUserDetailsService jpaUserDetailsService) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, JpaUserDetailsService jpaUserDetailsService) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.jpaUserDetailsService = jpaUserDetailsService;
     }
 
@@ -34,7 +39,8 @@ public class SecurityConfig {
                 .requestMatchers("/auth/signup").permitAll()
                 .anyRequest().permitAll()
             )
-            .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+            .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

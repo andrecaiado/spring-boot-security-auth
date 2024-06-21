@@ -2,6 +2,7 @@ package com.example.springbootsecurityauth.service;
 
 import com.example.springbootsecurityauth.dto.SignInResponse;
 import com.example.springbootsecurityauth.repository.UserRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
