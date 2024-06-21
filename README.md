@@ -1,9 +1,22 @@
 # Spring Boot Security Authentication and Authorization project
 This is a Spring Boot application that implements Spring Security for authentication and authorization.
 
+## Contents
+
+- [Features](#features)
+- [Dependencies](#dependencies)
+- [Implementation](#implementation)
+  - [Security filter chain](#security-filter-chain)
+  - [Authentication mechanism](#authentication-mechanism)
+    - [UsernamePasswordAuthenticationToken](#usernamepasswordauthenticationtoken)
+    - [AuthenticationProvider](#authenticationprovider)
+    - [UserDetailsService and PasswordEncoder](#userdetailsservice-and-passwordencoder)
+  - [User entity and SecurityUser class](#user-entity-and-securityuser-class)
+  - [Authorization](#authorization)
+
 ## Features
 
-- Exposes endpoints to register and authenticate users
+- Exposes endpoints to register and authenticate users (with username and password)
 - Exposes an endpoint to retrieve the current user information
 - Uses Spring Security for authentication and authorization
 - Generates a JWT token for authenticated users
@@ -30,24 +43,115 @@ To use Spring Security, we added the Spring Boot Starter Security dependency to 
 </dependency>
 ```
 
-## Authentication mechanism
+## Implementation
+
+In order to access a protected resource, a request goes through a filter chain, and an authentication and authorization mechanism.
+
+### Security filter chain
+
+The security filter chain is a list of filters that are executed in a specific order. Each filter is responsible for a specific task, such as processing the JWT token from the request header.
+
+![multi-securityfilterchain.png](src%2Fmain%2Fresources%2Fmulti-securityfilterchain.png)
+
+*[Spring Security Filter Chain (image from Spring documentation)](https://docs.spring.io/spring-security/reference/servlet/architecture.html)*
+
+In this project, we are using the following filters:
+
+VALIDATE THIS:
+- `CsrfFilter`: Prevents CSRF attacks
+- `Authorize Requests`: Authorizes the requests based on the request matchers
+- `UsernamePasswordAuthenticationFilter`: Processes the username and password from the request body ??
+- `JwtAuthenticationFilter`: Processes the JWT token from the request header
+
+The `SecurityFilterChain` is configured in the [SecurityConfig.java](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fspringbootsecurityauth%2Fconfig%2FSecurityConfig.java) class.
+
+```java
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests((authorize) -> authorize
+            .requestMatchers("/auth/login").permitAll()
+            .requestMatchers("/auth/signup").permitAll()
+            .anyRequest().permitAll()
+        );
+
+    return http.build();
+}
+```
+
+### Authentication mechanism
 
 In this project, we are using a Username and Password authentication mechanism. 
-
 The basic use case for this mechanism consists in a user sending a POST request to an authentication specific endpoint with the username and password in the request body. The application authenticates the user and returns a JWT token.
 
-## Provider manager
+Because we are storing the user details in a database, we are using the `DaoAuthenticationProvider` to authenticate the users.
 
+The implementation of the authentication mechanism is based on the following components and workflow:
 
+![daoauthenticationprovider.png](src%2Fmain%2Fresources%2Fdaoauthenticationprovider.png#center)
 
-### DaoAuthenticationProvider
+*[DaoAuthenticationProvider Usage (image from Spring documentation)](https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/dao-authentication-provider.html)*
 
-The `DaoAuthenticationProvider` is an `AuthenticationProvider` implementation that supports Username and Password authentication mechanism. It uses the `UserDetailsService` and `PasswordEncoder` to authenticate a username and password.
+Components and workflow description ([from Spring documentation](https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/dao-authentication-provider.html)):
 
-TODO: Create a custom diagram to explain the `DaoAuthenticationProvider` usage.
+1 - A UsernamePasswordAuthenticationToken is passed to the AuthenticationManager, which is implemented by ProviderManager.
 
-![daoauthenticationprovider.png](src%2Fmain%2Fresources%2Fdaoauthenticationprovider.png)
-*[DaoAuthenticationProvider Usage](https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/dao-authentication-provider.html)*
+2 - The ProviderManager is configured to use an AuthenticationProvider of type DaoAuthenticationProvider.
+
+3 - DaoAuthenticationProvider looks up the UserDetails from the UserDetailsService.
+
+4 - DaoAuthenticationProvider uses the PasswordEncoder to validate the password on the UserDetails returned in the previous step.
+
+5 - When authentication is successful, the Authentication that is returned is of type UsernamePasswordAuthenticationToken and has a principal that is the UserDetails returned by the configured UserDetailsService. Ultimately, the returned UsernamePasswordAuthenticationToken is set on the SecurityContextHolder by the authentication Filter.
+
+#### UsernamePasswordAuthenticationToken
+
+The username and password are passed to the `AuthenticationManager` in a `UsernamePasswordAuthenticationToken` object.
+
+```java
+@PostMapping("/login")
+public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest) {
+    Authentication authentication = new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password());
+    Authentication authenticated = authenticationManager.authenticate(authentication);
+    return ResponseEntity.ok().build();
+}
+```
+
+#### AuthenticationProvider
+
+In the [SecurityConfig.java](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fspringbootsecurityauth%2Fconfig%2FSecurityConfig.java) class, we configure the `AuthenticationManager` and the `PasswordEncoder`.
+
+The `AuthenticationManager` is configured to use a `DaoAuthenticationProvider` that uses a `UserDetailsService` and a `PasswordEncoder`.
+
+```java
+@Bean
+public AuthenticationManager authenticationManager(UserDetailsService jpaUserDetailsService, PasswordEncoder passwordEncoder) {
+    DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+    authenticationProvider.setUserDetailsService(jpaUserDetailsService);
+    authenticationProvider.setPasswordEncoder(passwordEncoder);
+
+    return new ProviderManager(authenticationProvider);
+}
+
+@Bean
+public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+}
+```
+
+#### UserDetailsService and PasswordEncoder
+
+The UserDetailsService is an interface that retrieves the user details from the database. In this project, we are using the [JpaUserDetailsService.java](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fspringbootsecurityauth%2Fservice%2FJpaUserDetailsService.java) class that implements the `UserDetailsService` interface.
+
+```java
+@Override
+public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    return userRepository.findByUsername(username)
+        .map(SecurityUser::new)
+        .orElseThrow(() -> new UsernameNotFoundException("Username not found: " + username));
+}
+```
 
 ## User entity and SecurityUser class
 
@@ -62,9 +166,10 @@ Thus, we created the `SecurityUser` class that implements the `UserDetails` inte
 
 We could have used the `User` entity to implements the `UserDetails` interface, but it is not recommended to expose the entity directly to the `AuthenticationManager`. The `SecurityUser` class provides a layer of abstraction between the entity and the `AuthenticationManager`.
 
-## JpaUserDetailsService
+## Authorization
 
-The `JpaUserDetailsService` class implements the `UserDetailsService` interface from Spring Security. It is used to retrieve the user details from the database. If the user is not found, it throws a `UsernameNotFoundException`.
+The authorization mechanism is implemented in the [JwtAuthenticationFilter.java](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fspringbootsecurityauth%2Fsecurity%2FJwtAuthenticationFilter.java) class.
 
-## Configuration
+Method security is enabled in the [SecurityConfig.java](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fspringbootsecurityauth%2Fconfig%2FSecurityConfig.java) class.
 
+Annotations in controller etc
