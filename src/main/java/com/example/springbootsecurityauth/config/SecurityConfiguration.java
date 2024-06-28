@@ -4,6 +4,7 @@ import com.example.springbootsecurityauth.security.JwtAuthenticationFilter;
 import com.example.springbootsecurityauth.security.AccessDeniedHandlerJwt;
 import com.example.springbootsecurityauth.security.JwtAuthenticationEntryPoint;
 import com.example.springbootsecurityauth.service.CustomUserDetailsService;
+import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,21 +42,19 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(cr->cr.disable())
-                .authorizeHttpRequests(
-                        req->req.requestMatchers("/auth/**")
-                            .permitAll()
-                            //.requestMatchers("/user/**").hasAuthority("ROLE_ADMIN")
-                            .anyRequest()
-                            .authenticated()
+                .exceptionHandling(
+                        ex -> ex.accessDeniedHandler(accessDeniedHandlerJwt)
+                                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
-                .userDetailsService(customUserDetailsService)
                 .sessionManagement(session->session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(
-                    ex -> ex.accessDeniedHandler(accessDeniedHandlerJwt)
-                            .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .authorizeHttpRequests(req ->
+                        req.requestMatchers("/auth/**").permitAll()
+                           //.requestMatchers("/user/**").hasAuthority("ROLE_ADMIN")
+                           .anyRequest().authenticated()
                 )
+                .userDetailsService(customUserDetailsService)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

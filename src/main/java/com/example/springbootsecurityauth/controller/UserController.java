@@ -11,7 +11,7 @@ import java.security.Principal;
 @RequestMapping("/user")
 public class UserController {
 
-    @PreAuthorize("hasRole('USERs')")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/me")
     public String user(Principal principal) {
         return "Hello, " + principal.getName() + "!";
