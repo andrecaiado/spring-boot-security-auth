@@ -8,11 +8,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class SecurityUser implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
     private User user;
 
-    public SecurityUser(User user) {
+    public CustomUserDetails(User user) {
         this.user = user;
     }
 

@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,11 +18,11 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${jwt.signing.key}")
-    private String jwtSigningKey;
+    @Value("${application.security.jwt.secret-key}")
+    private String jwtSecretKey;
 
-    @Value("${jwt.expiration.in.ms:86400000}")
-    private Long jwtExpirationInMs;
+    @Value("${application.security.jwt.expiration-time}")
+    private Long jwtExpirationTime;
 
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -46,7 +45,7 @@ public class JwtService {
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationTime))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
 
@@ -64,7 +63,7 @@ public class JwtService {
     }
 
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(jwtSigningKey);
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSecretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

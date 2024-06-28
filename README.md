@@ -1,10 +1,9 @@
 # Spring Boot Security Authentication and Authorization project
 This is a Spring Boot application that implements Spring Security for authentication and authorization.
 
-# Contents
+## Contents
 
 - [Features](#features)
-  - [Additional features](#additional-features)
 - [Dependencies](#dependencies)
 - [Implementation](#implementation)
   - [Security filter chain](#security-filter-chain)
@@ -24,7 +23,7 @@ This is a Spring Boot application that implements Spring Security for authentica
 - Uses JWT token for authorization
 - Stores the user details in a PostgreSQL database
 
-## Additional features
+**Additional features**:
 
 - Uses Spring Data JPA for database operations
 - Uses Flyway for database migrations
@@ -44,26 +43,41 @@ To use Spring Security, we added the Spring Boot Starter Security dependency to 
 </dependency>
 ```
 
+To use JWT tokens, we added the following dependencies to the `pom.xml` file.
+
+```xml
+<dependency>
+  <groupId>io.jsonwebtoken</groupId>
+  <artifactId>jjwt-api</artifactId>
+  <version>0.11.5</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.11.5</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.11.5</version>
+</dependency>
+```
+
 # Implementation
 
 In order to access a protected resource, a request goes through a filter chain, and an authentication and authorization mechanism.
 
 ## Security filter chain
 
-The security filter chain is a list of filters that are executed in a specific order. Each filter is responsible for a specific task, such as processing the JWT token from the request header.
-
-![multi-securityfilterchain.png](src%2Fmain%2Fresources%2Fmulti-securityfilterchain.png)
-
-*[Spring Security Filter Chain (image from Spring documentation)](https://docs.spring.io/spring-security/reference/servlet/architecture.html)*
+The security filter chain is a list of filters that are executed in a specific order. Each filter is responsible for a specific task, such as authorizing the access to specific endpoints or processing the JWT token from the request header.
 
 In this project, we are using the following filters:
 
-VALIDATE THIS:
-- `CsrfFilter`: Prevents CSRF attacks
+- `CsrfFilter`: Prevents CSRF attacks (currently disabled but should be enabled on production)
 - `Authorize Requests`: Authorizes the requests based on the request matchers
 - `Session Management`: Set the session management to be stateless because we don't want to store the session in the server
-- `UsernamePasswordAuthenticationFilter`: Processes the username and password from the request body ??
-- `JwtAuthenticationFilter`: Processes the JWT token from the request header
+- `Authentication Provider`: To set TODO 
+- `JwtAuthenticationFilter`: Processes the JWT token from the request header. This filter is added in a `addFilterBefore` filter so a JWT authentication is processed before a username and password authentication.
 
 The `SecurityFilterChain` is configured in the [SecurityConfig.java](src%2Fmain%2Fjava%2Fcom%2Fexample%2Fspringbootsecurityauth%2Fconfig%2FSecurityConfig.java) class.
 
@@ -76,8 +90,11 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             .requestMatchers("/auth/login").permitAll()
             .requestMatchers("/auth/signup").permitAll()
             .anyRequest().permitAll()
-        );
-
+        )
+        .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authenticationProvider(authenticationProvider())
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    
     return http.build();
 }
 ```

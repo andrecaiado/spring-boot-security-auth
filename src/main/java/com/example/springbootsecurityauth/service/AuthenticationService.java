@@ -1,8 +1,7 @@
 package com.example.springbootsecurityauth.service;
 
-import com.example.springbootsecurityauth.dto.SignInResponse;
-import com.example.springbootsecurityauth.repository.UserRepository;
-import org.springframework.security.access.prepost.PreAuthorize;
+import com.example.springbootsecurityauth.dto.LoginResponse;
+import com.example.springbootsecurityauth.entity.CustomUserDetails;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,25 +13,22 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
-    private final UserRepository userRepository;
-
-    private final JpaUserDetailsService jpaUserDetailsService;
+    private final UserService userService;
 
     private final JwtService jwtService;
 
-    public AuthenticationService(AuthenticationManager authenticationManager, UserRepository userRepository, JpaUserDetailsService jpaUserDetailsService, JwtService jwtService) {
+    public AuthenticationService(AuthenticationManager authenticationManager, UserService userService, JwtService jwtService) {
         this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-        this.jpaUserDetailsService = jpaUserDetailsService;
+        this.userService = userService;
         this.jwtService = jwtService;
     }
 
-    public SignInResponse signIn(String username, String password) {
+    public LoginResponse authenticate(String username, String password) {
         Authentication authentication = new UsernamePasswordAuthenticationToken(username, password);
         authenticationManager.authenticate(authentication);
 
-        UserDetails userDetails = jpaUserDetailsService.loadUserByUsername(username);
+        CustomUserDetails userDetails = userService.getUserByUsername(username);
         var jwt = jwtService.generateToken(userDetails);
-        return SignInResponse.builder().token(jwt).build();
+        return LoginResponse.builder().token(jwt).build();
     }
 }

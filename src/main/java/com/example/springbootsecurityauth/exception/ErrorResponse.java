@@ -1,5 +1,6 @@
 package com.example.springbootsecurityauth.exception;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.Date;
@@ -7,12 +8,14 @@ import java.util.Date;
 @Data
 public class ErrorResponse {
     private Date timestamp;
-    private int statusCode;
-    private String message;
+    private int status;
+    private String error;
+    private String path;
 
-    public ErrorResponse(int statusCode, String message) {
+    public ErrorResponse(int statusCode, String error, String path) {
         this.timestamp = new Date();
-        this.statusCode = statusCode;
-        this.message = message;
+        this.status = statusCode;
+        this.error = error;
+        this.path = path;
     }
 }
