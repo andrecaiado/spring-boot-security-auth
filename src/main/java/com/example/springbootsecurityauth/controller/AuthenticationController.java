@@ -27,7 +27,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegisterDto registerDto) throws Exception {
-        authenticationService.register(registerDto.getUsername(), registerDto.getPassword());
+        authenticationService.register(registerDto.getUsername(), registerDto.getPassword(), registerDto.getRoles());
         return ResponseEntity.status(HttpStatus.OK).body("User registered successfully!");
     }
 

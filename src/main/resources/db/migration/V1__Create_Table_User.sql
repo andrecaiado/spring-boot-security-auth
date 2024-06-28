@@ -3,5 +3,5 @@ CREATE TABLE if not exists users (
     username varchar(250) NOT NULL UNIQUE,
     password varchar(250) NOT NULL,
     last_login timestamp with time zone,
-    roles varchar(250)
+    roles varchar(255)[]
 );

@@ -1,5 +1,6 @@
 package com.example.springbootsecurityauth.entity;
 
+import com.example.springbootsecurityauth.enums.RoleEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,6 +32,7 @@ public class User {
     @Column(name = "last_login")
     private Instant lastLogin;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "roles")
-    private String roles;
+    private Set<RoleEnum> roles;
 }
