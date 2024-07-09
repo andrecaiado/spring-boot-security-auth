@@ -1,9 +1,12 @@
 package com.example.springbootsecurityauth.service;
 
 import com.example.springbootsecurityauth.dto.LoginResponseDto;
+import com.example.springbootsecurityauth.dto.RefreshTokenResponseDto;
 import com.example.springbootsecurityauth.entity.CustomUserDetails;
+import com.example.springbootsecurityauth.entity.RefreshToken;
 import com.example.springbootsecurityauth.entity.User;
 import com.example.springbootsecurityauth.enums.RoleEnum;
+import com.example.springbootsecurityauth.exception.RefreshTokenException;
 import com.example.springbootsecurityauth.exception.UsernameAlreadyExistsException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,11 +29,14 @@ public class AuthenticationService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public AuthenticationService(AuthenticationManager authenticationManager, UserService userService, JwtService jwtService, PasswordEncoder passwordEncoder) {
+    private final RefreshTokenService refreshTokenService;
+
+    public AuthenticationService(AuthenticationManager authenticationManager, UserService userService, JwtService jwtService, PasswordEncoder passwordEncoder, RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
+        this.refreshTokenService = refreshTokenService;
     }
 
     public LoginResponseDto authenticate(String username, String password) {
@@ -39,7 +45,9 @@ public class AuthenticationService {
 
         CustomUserDetails userDetails = userService.getUserByUsername(username);
         var jwt = jwtService.generateToken(userDetails);
-        return LoginResponseDto.builder().token(jwt).build();
+        var refreshToken = refreshTokenService.createRefreshToken(userDetails.getUser().getId());
+
+        return LoginResponseDto.builder().accessToken(jwt).refreshToken(refreshToken.getToken()).type("Bearer").build();
     }
 
     public void register(String username, String password, Set<String> roles) {
@@ -62,5 +70,24 @@ public class AuthenticationService {
         user.setRoles(userRoles);
 
         userService.createUser(user);
+    }
+
+    public RefreshTokenResponseDto refreshToken(String requestRefreshToken) {
+        RefreshToken refreshToken = refreshTokenService.findByToken(requestRefreshToken)
+                .orElseThrow(() -> new RefreshTokenException(requestRefreshToken, "Refresh token not found"));
+
+        refreshTokenService.verifyExpiration(refreshToken);
+
+        CustomUserDetails userDetails = userService.getUserByUsername(refreshToken.getUser().getUsername());
+
+        String token = jwtService.generateToken(userDetails);
+
+        RefreshTokenResponseDto refreshTokenResponseDto = RefreshTokenResponseDto.builder()
+                .accessToken(token)
+                .refreshToken(requestRefreshToken)
+                .type("Bearer")
+                .build();
+
+        return refreshTokenResponseDto;
     }
 }

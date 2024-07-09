@@ -1,10 +1,9 @@
 package com.example.springbootsecurityauth.config;
 
-import com.example.springbootsecurityauth.security.JwtAuthenticationFilter;
 import com.example.springbootsecurityauth.security.AccessDeniedHandlerJwt;
 import com.example.springbootsecurityauth.security.JwtAuthenticationEntryPoint;
+import com.example.springbootsecurityauth.security.JwtAuthenticationFilter;
 import com.example.springbootsecurityauth.service.CustomUserDetailsService;
-import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
