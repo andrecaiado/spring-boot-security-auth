@@ -10,21 +10,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
-@RequestMapping("/user")
-public class UserController {
+@RequestMapping("/admin")
+public class AdminController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    public AdminController(UserService userService) {
         this.userService = userService;
     }
 
-    @PreAuthorize("hasRole('USER')")
-    @GetMapping("/me")
-    public ResponseEntity<UserProfileDto> getUserProfile(Principal principal) {
-        UserProfileDto userProfile = userService.getUserProfile(principal.getName());
-        return ResponseEntity.status(HttpStatus.OK).body(userProfile);
+    //@PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/users")
+    public ResponseEntity<List<UserProfileDto>> userAllUsersProfiles() {
+        List<UserProfileDto> usersProfiles = userService.getAllUsers();
+        return ResponseEntity.status(HttpStatus.OK).body(usersProfiles);
     }
 }

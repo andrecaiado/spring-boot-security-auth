@@ -49,7 +49,7 @@ public class SecurityConfiguration {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req ->
                         req.requestMatchers("/auth/**").permitAll()
-                           //.requestMatchers("/user/**").hasAuthority("ROLE_ADMIN")
+                           .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                            .anyRequest().authenticated()
                 )
                 .userDetailsService(customUserDetailsService)

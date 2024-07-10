@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -37,11 +39,18 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found: " + username));
     }
 
+    public List<UserProfileDto> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(user -> new UserProfileDto(user.getUsername(), user.getLastLogin(), user.getRoles()))
+                .collect(Collectors.toList());
+    }
+
     public void updateLastLogin(String username) {
         userRepository.findByUsername(username)
-            .ifPresent(user -> {
-                user.setLastLogin(Instant.now());
-                userRepository.save(user);
-            });
+                .ifPresent(user -> {
+                    user.setLastLogin(Instant.now());
+                    userRepository.save(user);
+                });
     }
 }
