@@ -1,6 +1,7 @@
 package com.example.springbootsecurityauth.entity;
 
 import com.example.springbootsecurityauth.enums.RoleEnum;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class User {
     @Column(unique = true, name = "username")
     private String username;
 
+    @JsonIgnore()
     @NotNull()
     @Column(name = "password")
     private String password;
