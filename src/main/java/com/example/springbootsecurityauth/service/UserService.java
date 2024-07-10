@@ -7,6 +7,8 @@ import com.example.springbootsecurityauth.repository.UserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -33,5 +35,13 @@ public class UserService {
         return userRepository.findByUsername(username)
                 .map(user -> new UserProfileDto(user.getUsername(), user.getLastLogin(), user.getRoles()))
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found: " + username));
+    }
+
+    public void updateLastLogin(String username) {
+        userRepository.findByUsername(username)
+            .ifPresent(user -> {
+                user.setLastLogin(Instant.now());
+                userRepository.save(user);
+            });
     }
 }

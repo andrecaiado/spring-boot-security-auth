@@ -43,7 +43,10 @@ public class AuthenticationService {
         Authentication authentication = new UsernamePasswordAuthenticationToken(username, password);
         authenticationManager.authenticate(authentication);
 
+        userService.updateLastLogin(username);
+
         CustomUserDetails userDetails = userService.getUserByUsername(username);
+
         var jwt = jwtService.generateToken(userDetails);
         var refreshToken = refreshTokenService.createRefreshToken(userDetails.getUser().getId());
 

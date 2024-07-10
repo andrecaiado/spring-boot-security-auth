@@ -1,7 +1,6 @@
 package com.example.springbootsecurityauth.controller;
 
 import com.example.springbootsecurityauth.dto.UserProfileDto;
-import com.example.springbootsecurityauth.entity.CustomUserDetails;
 import com.example.springbootsecurityauth.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +27,4 @@ public class UserController {
         UserProfileDto userProfile = userService.getUserProfile(principal.getName());
         return ResponseEntity.status(HttpStatus.OK).body(userProfile);
     }
-
-
-
 }
