@@ -25,15 +25,18 @@ public class AuthenticationService {
 
     private final UserService userService;
 
+    private final CustomUserDetailsService userDetailsService;
+
     private final JwtService jwtService;
 
     private final PasswordEncoder passwordEncoder;
 
     private final RefreshTokenService refreshTokenService;
 
-    public AuthenticationService(AuthenticationManager authenticationManager, UserService userService, JwtService jwtService, PasswordEncoder passwordEncoder, RefreshTokenService refreshTokenService) {
+    public AuthenticationService(AuthenticationManager authenticationManager, UserService userService, CustomUserDetailsService userDetailsService, JwtService jwtService, PasswordEncoder passwordEncoder, RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
+        this.userDetailsService = userDetailsService;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.refreshTokenService = refreshTokenService;
@@ -45,7 +48,7 @@ public class AuthenticationService {
 
         userService.updateLastLogin(username);
 
-        CustomUserDetails userDetails = userService.getUserByUsername(username);
+        CustomUserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         var jwt = jwtService.generateToken(userDetails);
         var refreshToken = refreshTokenService.createRefreshToken(userDetails.getUser().getId());
@@ -81,7 +84,7 @@ public class AuthenticationService {
 
         refreshTokenService.verifyExpiration(refreshToken);
 
-        CustomUserDetails userDetails = userService.getUserByUsername(refreshToken.getUser().getUsername());
+        CustomUserDetails userDetails = userDetailsService.loadUserByUsername(refreshToken.getUser().getUsername());
 
         String token = jwtService.generateToken(userDetails);
 
