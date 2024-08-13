@@ -77,7 +77,7 @@ Because we are storing the user details in a database, we use the `DaoAuthentica
 
 The implementation of the authentication mechanism is based on the following components and workflow:
 
-![daoauthenticationprovider.png](src%2Fmain%2Fresources%2Fdaoauthenticationprovider.png)
+![dao-auth-prov.png](src%2Fmain%2Fresources%2Fdao-auth-prov.png)
 
 *[DaoAuthenticationProvider Usage (image from Spring documentation)](https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/dao-authentication-provider.html)*
 
