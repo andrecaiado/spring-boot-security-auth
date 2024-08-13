@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.util.EnumUtils;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +27,7 @@ public class AuthenticationService {
 
     private final UserService userService;
 
-    private final CustomUserDetailsService userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
 
     private final JwtService jwtService;
 
@@ -38,7 +37,7 @@ public class AuthenticationService {
 
     private final RoleService roleService;
 
-    public AuthenticationService(AuthenticationManager authenticationManager, UserService userService, CustomUserDetailsService userDetailsService, JwtService jwtService, PasswordEncoder passwordEncoder, RefreshTokenService refreshTokenService, RoleService roleService) {
+    public AuthenticationService(AuthenticationManager authenticationManager, UserService userService, UserDetailsServiceImpl userDetailsService, JwtService jwtService, PasswordEncoder passwordEncoder, RefreshTokenService refreshTokenService, RoleService roleService) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.userDetailsService = userDetailsService;
