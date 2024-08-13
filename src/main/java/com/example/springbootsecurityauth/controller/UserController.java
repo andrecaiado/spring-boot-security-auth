@@ -21,7 +21,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/me")
     public ResponseEntity<UserProfileDto> getUserProfile(Principal principal) {
         UserProfileDto userProfile = userService.getUserProfile(principal.getName());

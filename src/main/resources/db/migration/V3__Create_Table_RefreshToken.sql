@@ -1,4 +1,4 @@
-CREATE TABLE if not exists refresh_token (
+CREATE TABLE if NOT EXISTS refresh_token (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     expiration_date timestamp NOT NULL,
     token varchar(255) NOT NULL,

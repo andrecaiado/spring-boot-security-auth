@@ -3,7 +3,8 @@ package com.example.springbootsecurityauth.dto;
 import com.example.springbootsecurityauth.enums.RoleEnum;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 
-public record UserProfileDto(String username, Instant lastLogin, Set<RoleEnum> roles) {
+public record UserProfileDto(String username, Instant lastLogin, List<String> roles) {
 }

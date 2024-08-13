@@ -1,6 +1,5 @@
 package com.example.springbootsecurityauth.entity;
 
-import com.example.springbootsecurityauth.enums.RoleEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -9,14 +8,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
 @Table(name = "users")
-public class User {
+public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -34,7 +34,14 @@ public class User {
     @Column(name = "last_login")
     private Instant lastLogin;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "roles")
-    private Set<RoleEnum> roles;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private List<Role> roles = new ArrayList<>();
+
+//    @ElementCollection
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "roles")
+//    private Set<RoleEnum> roles;
 }

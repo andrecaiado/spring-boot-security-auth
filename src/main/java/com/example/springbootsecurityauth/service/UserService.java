@@ -1,7 +1,7 @@
 package com.example.springbootsecurityauth.service;
 
 import com.example.springbootsecurityauth.dto.UserProfileDto;
-import com.example.springbootsecurityauth.entity.User;
+import com.example.springbootsecurityauth.entity.AppUser;
 import com.example.springbootsecurityauth.repository.UserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -22,20 +22,20 @@ public class UserService {
         return userRepository.existsByUsername(username);
     }
 
-    public void createUser(User user) {
+    public void createUser(AppUser user) {
         userRepository.save(user);
     }
 
     public UserProfileDto getUserProfile(String username) {
         return userRepository.findByUsername(username)
-                .map(user -> new UserProfileDto(user.getUsername(), user.getLastLogin(), user.getRoles()))
+                .map(user -> new UserProfileDto(user.getUsername(), user.getLastLogin(), user.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toList())))
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found: " + username));
     }
 
     public List<UserProfileDto> getAllUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(user -> new UserProfileDto(user.getUsername(), user.getLastLogin(), user.getRoles()))
+                .map(user -> new UserProfileDto(user.getUsername(), user.getLastLogin(), user.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toList())))
                 .collect(Collectors.toList());
     }
 

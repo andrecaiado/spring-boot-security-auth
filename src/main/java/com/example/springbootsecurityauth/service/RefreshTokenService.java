@@ -28,9 +28,9 @@ public class RefreshTokenService {
         return refreshTokenRepository.findByToken(token);
     }
 
-    public RefreshToken createRefreshToken(Long userId) {
+    public RefreshToken createRefreshToken(String username) {
         RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setUser(userRepository.findById(userId).get());
+        refreshToken.setUser(userRepository.findByUsername(username).get());
         refreshToken.setExpirationDate(Instant.now().plusMillis(jwtRefreshTokenExpirationTime));
         refreshToken.setToken(UUID.randomUUID().toString());
 

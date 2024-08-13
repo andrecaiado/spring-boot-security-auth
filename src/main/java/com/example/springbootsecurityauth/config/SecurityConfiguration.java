@@ -3,7 +3,6 @@ package com.example.springbootsecurityauth.config;
 import com.example.springbootsecurityauth.security.AccessDeniedHandlerJwt;
 import com.example.springbootsecurityauth.security.JwtAuthenticationEntryPoint;
 import com.example.springbootsecurityauth.security.JwtAuthenticationFilter;
-import com.example.springbootsecurityauth.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,6 +11,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -28,13 +28,13 @@ public class SecurityConfiguration {
 
     private final AccessDeniedHandlerJwt accessDeniedHandlerJwt;
 
-    private final CustomUserDetailsService customUserDetailsService;
+    private final UserDetailsService userDetailsService;
 
-    public SecurityConfiguration(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAuthenticationFilter jwtAuthenticationFilter, AccessDeniedHandlerJwt accessDeniedHandlerJwt, CustomUserDetailsService customUserDetailsService) {
+    public SecurityConfiguration(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAuthenticationFilter jwtAuthenticationFilter, AccessDeniedHandlerJwt accessDeniedHandlerJwt, UserDetailsService userDetailsService) {
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.accessDeniedHandlerJwt = accessDeniedHandlerJwt;
-        this.customUserDetailsService = customUserDetailsService;
+        this.userDetailsService = userDetailsService;
     }
 
     @Bean
@@ -52,7 +52,7 @@ public class SecurityConfiguration {
                            .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                            .anyRequest().authenticated()
                 )
-                .userDetailsService(customUserDetailsService)
+                .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

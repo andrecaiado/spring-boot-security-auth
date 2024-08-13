@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LoginResponseDto {
     private String accessToken;
+    @Builder.Default
     private String type = "Bearer";
     private String refreshToken;
 }
