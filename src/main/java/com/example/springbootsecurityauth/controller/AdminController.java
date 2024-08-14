@@ -4,6 +4,7 @@ import com.example.springbootsecurityauth.dto.UserProfileDto;
 import com.example.springbootsecurityauth.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +21,7 @@ public class AdminController {
         this.userService = userService;
     }
 
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users")
     public ResponseEntity<List<UserProfileDto>> userAllUsersProfiles() {
         List<UserProfileDto> usersProfiles = userService.getAllUsers();
